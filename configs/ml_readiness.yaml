@@ -1,0 +1,42 @@
+# ==============================================================================
+# Lecture Engagement Pattern Analyzer - Machine Learning Readiness Gate
+# ==============================================================================
+
+# Minimum scientific criteria required before an automated model training workflow
+# can proceed on genuine human research data.
+
+readiness_gates:
+  # Participant and Session Diversity (Minimum Pilot Threshold: 10 genuine human participants)
+  min_distinct_participants: 10
+  min_distinct_sessions: 10
+  min_annotated_duration_seconds: 600.0
+
+  # Class Balance & Representation
+  min_samples_per_class: 40
+  min_participants_per_class: 3
+
+  # Multi-Level Data Quality & Missingness
+  # 1. Overall missing fraction across all candidate feature columns
+  max_overall_missing_fraction: 0.35
+  # 2. Per-feature missing fraction threshold for critical predictive features
+  max_critical_feature_missing_fraction: 0.20
+  critical_features:
+    - "head_pitch"
+    - "head_yaw"
+    - "ear_avg"
+    - "face_quality"
+  # 3. Maximum allowed unobservable frames fraction
+  max_unlabeled_fraction: 0.20
+  min_pass_audit_rate: 0.80
+
+  # Provenance Rules (Strict)
+  allowed_provenances:
+    - "REAL_HUMAN"
+  disallow_simulated: true
+  disallow_pipeline_validation: true
+  disallow_unknown: true
+
+  # Evaluation Scheme (Strict identity isolation)
+  split_strategy: "group_kfold"  # Grouped strictly by participant ID to prevent identity leakage
+  n_splits: 5
+  random_seed: 42

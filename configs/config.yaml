@@ -1,0 +1,85 @@
+# ==============================================================================
+# Lecture Engagement Pattern Analyzer - System Configuration
+# ==============================================================================
+
+# Application & Logging
+system:
+  app_name: "Lecture Engagement Pattern Analyzer"
+  version: "0.1.0"
+  log_level: "INFO"
+  log_dir: "data/reports"
+
+# Camera & Frame Acquisition
+camera:
+  index: 1
+  width: 1280
+  height: 720
+  backend: "DEFAULT"  # Options: DEFAULT, DSHOW, MSMF
+  auto_reconnect: true
+  max_reconnect_attempts: 3
+  reconnect_delay_seconds: 1.0
+
+# Storage Paths
+storage:
+  database_path: "data/database/lecture_analyzer.db"
+  recordings_dir: "data/recordings"
+  exports_dir: "data/exports"
+  reports_dir: "data/reports"
+  batch_write_interval_seconds: 1.0
+  batch_write_max_queue: 500
+
+# Model Paths & Offline Availability
+models:
+  face_landmarker_path: "models/face_landmarker.task"
+  yolo_pose_path: "models/yolov8n-pose.pt"
+  yolo_detect_path: "models/yolov8n.pt"
+  device: "auto"  # 'auto', 'cuda', or 'cpu'
+
+# Vision Pipeline Thresholds
+vision:
+  person_confidence_threshold: 0.50
+  object_confidence_threshold: 0.35
+  face_min_confidence: 0.50
+  face_quality_threshold: 0.20  # Composite score from sharpness, contrast, landmark confidence
+  phone_class_id: 67            # COCO class 67: cell phone
+  phone_person_iou_threshold: 0.15 # Minimum overlap or proximity to associate phone with person
+  mirror_display: true          # Mirror webcam feed for user display comfort
+
+# Head Pose Angle Thresholds (degrees)
+# Coordinate system: Yaw (horizontal +/- turn), Pitch (vertical +up/-down), Roll (+/- tilt)
+head_pose:
+  yaw_looking_away_threshold: 28.0   # Beyond +/- 28 deg is looking away
+  pitch_head_down_threshold: -18.0    # Below -18 deg (downward tilt) is head down
+  pitch_head_up_threshold: 25.0       # Above 25 deg is looking up
+  roll_tilt_threshold: 25.0           # Extreme tilt
+
+# Facial Metric Thresholds
+facial:
+  ear_closed_threshold: 0.20          # Eye Aspect Ratio below this is closed eyes
+  mar_open_threshold: 0.50            # Mouth Aspect Ratio above this is open mouth (yawn/speaking)
+  drowsy_closed_duration_seconds: 0.6 # Continuous eye closure for drowsy/sleep-like evidence
+  head_down_duration_seconds: 1.5     # Continuous lowered head for HEAD_DOWN / WRITING_READING
+
+# Anonymous Person Tracking
+tracking:
+  iou_threshold: 0.30
+  track_retention_seconds: 2.5        # Retain lost track state before deregistering
+  min_hits_to_confirm: 2
+
+# Behavioral Rule Engine & Temporal Smoothing
+behavior:
+  smoothing_window_seconds: 1.5       # Temporal smoothing window duration
+  min_observable_frames_fraction: 0.60
+  enable_smoothing: true
+
+# Machine Learning Runtime
+ml:
+  enabled: false                      # Off by default until model is trained and validated
+  active_model_path: "models/active_behavior_classifier.joblib"
+  active_model_metadata: "models/active_model_metadata.json"
+
+# Privacy & Video Retention
+privacy:
+  allow_raw_video_recording: false    # Requires explicit user consent per session
+  video_codec: "mp4v"
+  retain_unconsented_recordings: false
